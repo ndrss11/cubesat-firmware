@@ -1,6 +1,4 @@
 #Este codigo identifica el puerto en el que esta conectado el arduino UNO
-
-
 import serial.tools.list_ports
 
 available_ports = list(serial.tools.list_ports.comports())

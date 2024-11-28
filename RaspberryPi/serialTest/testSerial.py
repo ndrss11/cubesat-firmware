@@ -1,6 +1,7 @@
 
 import serial 
 import serial.tools.list_ports #https://pyserial.readthedocs.io/en/latest/tools.html#module-serial.tools.list_ports
+import time
 
 puertos = list(serial.tools.list_ports.comports())
 
@@ -18,8 +19,12 @@ ser = serial.Serial(arduinoPort, 9600, timeout = 1)
 def read_arduino_data():
 	data = ser.readline().decode('ascii').strip()
 	if data:
-		sensor_name, value = data.split(':')
-		print(f"{sensor_name}: {value}")
+		datoSensor = data.split(',')
+		print(datoSensor)
 
 while True:
+	ser.write(bytes(b"cubesat"))
 	read_arduino_data()
+	line = ser.readline().decode('utf-8').rstrip()
+	print(line)
+	time.sleep(5)	
