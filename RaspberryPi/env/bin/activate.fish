@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/ndrs11/Documents/python_codes/serialTest/env"
+set -gx VIRTUAL_ENV "/home/ndrs11/Documents/uas/cubesat-firmware/RaspberryPi/env"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

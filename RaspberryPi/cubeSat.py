@@ -17,18 +17,13 @@ print(arduinoPort)
 
 ser = serial.Serial(arduinoPort, 115200 , timeout = 1)
 
-def read_arduino_data():
-	data = ser.readline().decode('ascii').strip()
-	if data:
-		datoSensor = data.split(',')
-		print(datoSensor)
 
 def insertar_linea(nombre_archivo, texto):
     try:
         # Abre el archivo en modo de escritura al final (append)
         with open(nombre_archivo, 'a') as archivo:
             archivo.write(texto + '\n')  # Escribe la línea con salto de línea
-        print(f"Línea añadida: {texto}")
+        print(f"Línea añadida: {texto} \n")
     except Exception as e:
         print(f"Ocurrió un error: {e}")
 
@@ -43,6 +38,7 @@ while True:
 	ser.write(bytes(b"cubesat"))
 	line = ser.readline().decode('ascii').rstrip()
 	print(line)
-	insertar_linea(nombre_del_archivo, line)
 
-	time.sleep(2)	
+	insertar_linea(nombre_del_archivo, line)
+	time.sleep(2)
+		

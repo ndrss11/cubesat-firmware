@@ -5,8 +5,9 @@
 #include <Wire.h> //No busque el porque de esta libreria pero es necesaria para poder usar el MPU6050, Si funciona ni le mueva
 #include <Adafruit_Sensor.h> //Libreria para poder utlizar sensore de Adafruit, probablemente hagan mas lento el codigo para la facilidad para usar cualquie sensor compensa, ademas el tiempo de lectura no estan importante asi que todo fineee
 #include <TinyGPS++.h> //Libreria para poder usar el modulo de GPS
-#include <SoftwareSerial.h>//Sin softwareSerial no funciona el GPS
-
+#include <SoftwareSerial.h>//S
+#include <SPI.h> //LoRa
+#include <LoRa.h> //LoRa
 
 
 DHT dhtSensor(5, DHT11); //Creamos una clase DHT donde especificamos el pin donde conectamos el sensor y el modelo que usamos, la clase se llama dhtSensor
@@ -50,9 +51,6 @@ String datoCompleto;    //Todo en un solo dato locura extrema
 
 String lecturaSerial;
 
-
-
-
 void setup(){
   Serial.begin(115200);
   dhtSensor.begin(); //Inicializamos el DHT
@@ -70,6 +68,13 @@ void setup(){
   
   gpsSerial.begin(9600);
 
+  LoRa.setPins(10,9,8); //SS, RST, DIO0
+  Serial.print("LoRa Sender");
+
+  if(!LoRa.begin(915E6)) Serial.println("Ha fallado LoRa");
+
+  LoRa.setSyncWord(0xF3);
+
 }
 
 void loop(){
@@ -84,7 +89,12 @@ void loop(){
       mpuLectura(accXBMP, accyBMP, acczBMP, gyrXBMP, gyrYBMP, gyrZBMP); //Llamamos la funcion mpuLectura para actualizar las varibales globales del mpu
       mostrarDatosGPS();
       lecturaSerial = Serial.readString();  // Lee el mensaje enviado por la Raspberry Pi
-      if(lecturaSerial.equals("cubesat")) Serial.print(datoCompleto);
+      if(lecturaSerial.equals("cubesat")) {
+        Serial.print(datoCompleto);
+        LoRa.beginPacket();
+        LoRa.print(datoCompleto);
+        LoRa.endPacket();  
+      }
     }    
   }
 }
@@ -140,8 +150,6 @@ void mpuLectura(float &accel_x, float &accel_y, float &accel_z, float &gyro_x, f
 } 
 
 void mostrarDatosGPS() {
-
-
 /*
   if (gps.time.isUpdated()) {
     Serial.print(gps.time.hour());
@@ -185,14 +193,11 @@ void mostrarDatosGPS() {
       + "," + String(accXBMP) + "," + String(accyBMP) + "," + String(acczBMP) + "," + String(gyrXBMP) + "," + String(gyrYBMP) + "," + String(gyrZBMP) + "\n");
   
   }*/
+ /*
  if (gps.time.isUpdated() && gps.location.isUpdated()) {
     datoCompleto = String(gps.time.hour()) + ":" + String(gps.time.minute()) + ":" + String(gps.time.second())+ "," + String(gps.location.lat(), 6) + "," + String(gps.location.lng(), 6) + "," + String(gps.altitude.meters()) + ","+ String(humDHT) + "," + String(tempDHT) + "," + String(tempBMP) + "," + String(pressBMP) + "," + String(altBMP) + "," + String(seaPressBMP)
-      + "," + String(accXBMP) + "," + String(accyBMP) + "," + String(acczBMP) + "," + String(gyrXBMP) + "," + String(gyrYBMP) + "," + String(gyrZBMP) + "\n";
-
-  }
-
-
-
-
-
+      + "," + String(accXBMP) + "," + String(accyBMP) + "," + String(acczBMP) + "," + String(gyrXBMP) + "," + String(gyrYBMP) + "," + String(gyrZBMP) ;
+  }*/
+   datoCompleto = String(gps.time.hour()) + ":" + String(gps.time.minute()) + ":" + String(gps.time.second())+ "," + String(gps.location.lat(), 6) + "," + String(gps.location.lng(), 6) + "," + String(gps.altitude.meters()) + ","+ String(humDHT) + "," + String(tempDHT) + "," + String(tempBMP) + "," + String(pressBMP) + "," + String(altBMP) + "," + String(seaPressBMP)
+      + "," + String(accXBMP) + "," + String(accyBMP) + "," + String(acczBMP) + "," + String(gyrXBMP) + "," + String(gyrYBMP) + "," + String(gyrZBMP) ;
 }
