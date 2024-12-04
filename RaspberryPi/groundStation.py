@@ -40,7 +40,5 @@ while True:
 	#ser.write(bytes(b"cubesat"))
 	line = ser.readline().decode('ascii').rstrip()
 	print(line)
-
 	insertar_linea(nombre_del_archivo, line)
-	time.sleep(2)
-		
+
